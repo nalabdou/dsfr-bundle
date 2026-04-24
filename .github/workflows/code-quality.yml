@@ -1,0 +1,67 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: code-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  composer-validate:
+    name: "Composer Validate"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          tools: composer:v2
+          coverage: none
+      - run: composer validate --strict --no-check-publish
+
+  phpcpd:
+    name: "Copy-Paste Detection"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          tools: composer:v2
+          coverage: none
+      - run: composer install --no-progress --prefer-dist
+      - name: Run PHPCPD
+        run: |
+          curl -L https://phar.phpunit.de/phpcpd.phar -o phpcpd.phar
+          php phpcpd.phar src \
+            --min-lines=5 \
+            --min-tokens=70 \
+            --exclude=tests
+        continue-on-error: true
+
+  phpdoc-check:
+    name: "PHPDoc Completeness"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          tools: composer:v2
+          coverage: none
+      - run: composer install --no-progress
+
+      - name: Check strict_types
+        run: |
+          MISSING=$(find src tests -type f -name "*.php" \
+            | xargs grep -rL "declare(strict_types=1)" 2>/dev/null || true)
+          if [ -n "$MISSING" ]; then
+            echo "Missing declare(strict_types=1) in:"
+            echo "$MISSING"
+            exit 1
+          fi
+          echo "All PHP files have declare(strict_types=1) ✓"

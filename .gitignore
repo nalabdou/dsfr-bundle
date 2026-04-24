@@ -1,0 +1,9 @@
+/vendor/
+/coverage/
+/.php-cs-fixer.cache
+/.phpunit.result.cache
+/.phpunit.cache/
+/composer.lock
+*.pem
+*.lic
+bin/generate-license

@@ -1,0 +1,14 @@
+.github             export-ignore
+tests               export-ignore
+.php-cs-fixer.php   export-ignore
+phpstan.neon        export-ignore
+rector.php          export-ignore
+phpunit.xml.dist    export-ignore
+.gitattributes      export-ignore
+.gitignore          export-ignore
+CHANGELOG.md        export-ignore
+Makefile            export-ignore
+docs                export-ignore
+coverage            export-ignore
+bin/generate-license export-ignore
+bin/generate-enums   export-ignore
