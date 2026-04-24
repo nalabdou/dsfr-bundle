@@ -7,3 +7,4 @@
 *.pem
 *.lic
 bin/generate-license
+/sandbox/
