@@ -14,7 +14,10 @@ declare(strict_types=1);
 
 namespace Nalabdou\Dsfr;
 
+use Nalabdou\Dsfr\Attribute\AsCommunityComponent;
+use Nalabdou\Dsfr\Attribute\AsProComponent;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
+use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
@@ -47,6 +50,26 @@ final class DsfrBundle extends AbstractBundle
             ->set('dsfr.dsfr_version', self::DSFR_VERSION);
 
         $container->import('../config/services.php');
+
+        $builder->registerAttributeForAutoconfiguration(
+            AsCommunityComponent::class,
+            static function (
+                ChildDefinition $definition,
+                AsCommunityComponent $attribute,
+            ): void {
+                $definition->addTag(self::TAG_COMMUNITY);
+            },
+        );
+
+        $builder->registerAttributeForAutoconfiguration(
+            AsProComponent::class,
+            static function (
+                ChildDefinition $definition,
+                AsProComponent $attribute,
+            ): void {
+                $definition->addTag(self::TAG_PRO);
+            },
+        );
     }
 
     public function prependExtension(
