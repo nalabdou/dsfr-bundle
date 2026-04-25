@@ -1,25 +1,64 @@
 <?php
 
-declare(strict_types=1);
+/*
+ * This file is part of the nalabdou/dsfr-bundle package.
+ *
+ * (c) Nadim AL ABDOU <nadim.alabdou@gmail.com>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
 
-use PhpCsFixer\Config;
-use PhpCsFixer\Finder;
+if (!\file_exists(__DIR__ . '/src')) {
+    exit(0);
+}
 
-$finder = Finder::create()
-    ->in([__DIR__ . '/src', __DIR__ . '/tests'])
-    ->name('*.php')
-    ->ignoreDotFiles(true)
-    ->ignoreVCS(true);
+$fileHeader = <<<'EOF'
+ This file is part of the nalabdou/dsfr-bundle package.
 
-return (new Config())
+ (c) Nadim AL ABDOU <nadim.alabdou@gmail.com>
+
+ For the full copyright and license information, please view
+ the LICENSE file that was distributed with this source code.
+
+EOF;
+
+return (new \PhpCsFixer\Config())
+    ->setParallelConfig(\PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect())
     ->setRules([
-        '@Symfony'           => true,
-        '@Symfony:risky'     => true,
-        '@PHP83Migration'    => true,
+        '@PHP8x3Migration' => true,
+        '@PHP8x3Migration:risky' => true,
+        '@PHPUnit10x0Migration:risky' => true,
+        '@Symfony' => true,
+        '@Symfony:risky' => true,
+
         'declare_strict_types' => true,
-        'strict_param'       => true,
-        'ordered_imports'    => ['sort_algorithm' => 'alpha'],
-        'no_unused_imports'  => true,
+
+        'header_comment' => [
+            'header' => $fileHeader,
+            'location' => 'after_declare_strict',
+        ],
+
+        'php_unit_attributes' => true,
+
+        'void_return' => [
+            'fix_lambda' => false,
+        ],
+
+        'native_function_invocation' => [
+            'include' => ['@internal'],
+            'scope' => 'namespaced',
+            'strict' => true,
+        ],
+        'global_namespace_import' => [
+            'import_classes' => false,
+            'import_functions' => false,
+            'import_constants' => false,
+        ],
     ])
     ->setRiskyAllowed(true)
-    ->setFinder($finder);
+    ->setFinder(
+        (new \PhpCsFixer\Finder())
+            ->in(__DIR__ . '/src')
+            ->in(__DIR__ . '/tests')
+    );
