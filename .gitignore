@@ -8,3 +8,4 @@
 *.lic
 bin/generate-license
 /sandbox/
+config/reference.php
